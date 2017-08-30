@@ -1,45 +1,57 @@
 #include <Servo.h>
- 
+
+#define CH1 5
+#define CH2 6
+#define CH3 7
+#define CH4 8
+
 Servo esc1, esc2, esc3, esc4;
 
-long elevation, leftRight, fowBack;
 
-
-
-// 
+int climb; // elevation
+int roll; // left right
+int pitch; // forward backward
+int yaw; // turn clockwise counterclockwise
 
 void setup()
 {
   Serial.begin(9600);
-  esc1.attach(6);
+  /*esc1.attach(6);
   esc2.attach(9);
   esc3.attach(10);
-  esc4.attach(11);
+  esc4.attach(11);*/
   
 }
  
 void loop()
 {
-  elevation = pulseIn(7, HIGH); // CH2
-  leftRight = pulseIn(8, HIGH); // CH1
-  fowBack = pulseIn(12, HIGH); // CH3
+  yaw = pulseIn(CH1,HIGH); //min-max -> 1041-1846
+  climb = pulseIn(CH2, HIGH); //min-max -> 1138-1939
+  roll = pulseIn(CH4, HIGH); //min-max -> 1030-1843
+  pitch = pulseIn(CH3, HIGH); //min-max -> 1050-1854
 
-  elevation = map(elevation, 968, 1950, 0, 160);
-  leftRight = map(leftRight, 900, 1900, -22, 22);
-  fowBack = map(fowBack, 900, 1900, -22, 22);
 
+  /*climb = map(elevation, 968, 1950, 0, 160);
+  roll = map(leftRight, 900, 1900, -22, 22);
+  pitch = map(fowBack, 900, 1900, -22, 22);*/
+
+  Serial.print("yaw = ");
+  Serial.print(yaw);
+  Serial.print("  ");
   
-  Serial.print("elevation = ");
-  Serial.println(elevation);
+  Serial.print("climb = ");
+  Serial.print(climb);
+  Serial.print("  ");
 
-  Serial.print("leftRight = ");
-  Serial.println(leftRight);
+  Serial.print("roll = ");
+  Serial.print(roll);
+  Serial.print("  ");
 
-  Serial.print("fowBack = ");
-  Serial.println(fowBack);
+  Serial.print("pitch = ");
+  Serial.println(pitch);
   
-  esc1.write(elevation + leftRight - fowBack);
+  /*esc1.write(elevation + leftRight - fowBack);
   esc2.write(elevation + leftRight + fowBack);
   esc3.write(elevation - leftRight + fowBack);
-  esc4.write(elevation - leftRight - fowBack);
+  esc4.write(elevation - leftRight - fowBack);*/
 }
