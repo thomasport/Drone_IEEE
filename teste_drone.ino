@@ -120,7 +120,7 @@ void loop()
     IMU.readMag();
     printAttitude(IMU.ax, IMU.ay, IMU.az, -IMU.my, -IMU.mx, IMU.mz);
     roll_error = measured_roll - 0;
-    pitch_error - measured_pitch - 0;
+    pitch_error = measured_pitch - 0;
     //pwm = pwm -p*error;
     pid_flag = 0;
   }
