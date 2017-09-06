@@ -5,6 +5,10 @@
 #include <LSM9DS1_Types.h>
 #include <SparkFunLSM9DS1.h>
 
+//--------esc calibrator define------------
+#define MAX_SIGNAL 2000
+#define MIN_SIGNAL 1000
+
 //-------- radio controller defines ------------
 #define CH1 5
 #define CH2 6
@@ -101,10 +105,19 @@ void setup()
 
   Timer1.initialize(20000); // interrupt every 0.02 second -> 50Hz
   Timer1.attachInterrupt(ISR_timer);
-  /*esc1.attach(6);
+  esc1.attach(5);
   esc2.attach(9);
   esc3.attach(10);
-  esc4.attach(11);*/
+  esc4.attach(11);
+  esc1.writeMicroseconds(MIN_SIGNAL);
+  esc2.writeMicroseconds(MIN_SIGNAL);
+  esc3.writeMicroseconds(MIN_SIGNAL);
+  esc4.writeMicroseconds(MIN_SIGNAL);
+  delay(3000);
+  esc1.writeMicroseconds(MAX_SIGNAL);
+  esc2.writeMicroseconds(MAX_SIGNAL);
+  esc3.writeMicroseconds(MAX_SIGNAL);
+  esc4.writeMicroseconds(MAX_SIGNAL);
   
 }
  
