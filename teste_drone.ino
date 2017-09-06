@@ -36,8 +36,11 @@ int yaw; // turn clockwise counterclockwise
 int pid_flag = 0;
 float pitch_error;
 float roll_error;
-float p = 0.01;
-int pwm;
+float p = 1;
+int pwm1 = 0;
+int pwm2 = 0;
+int pwm3 = 0;
+int pwm4 = 0;
 
 // --------- IMU variables --------------
 float measured_yaw;
@@ -108,10 +111,12 @@ void setup()
 void loop()
 {
   // --------------- radio controller data aquisition ---------------------
-  yaw = pulseIn(CH1,HIGH); //min-max -> 1041-1846
+  //yaw = pulseIn(CH1,HIGH); //min-max -> 1041-1846
   climb = pulseIn(CH2, HIGH); //min-max -> 1138-1939
-  roll = pulseIn(CH4, HIGH); //min-max -> 1030-1843
-  pitch = pulseIn(CH3, HIGH); //min-max -> 1050-1854
+  //roll = pulseIn(CH4, HIGH); //min-max -> 1030-1843
+  //pitch = pulseIn(CH3, HIGH); //min-max -> 1050-1854
+
+  climb = map(climb,1138,1939,1000, 1500);
 
   // ------------- PID algorithm ----------------------
   if(pid_flag == 1)
@@ -121,6 +126,47 @@ void loop()
     printAttitude(IMU.ax, IMU.ay, IMU.az, -IMU.my, -IMU.mx, IMU.mz);
     roll_error = measured_roll - 0;
     pitch_error = measured_pitch - 0;
+    pwm1 = pwm1 + p*roll_error + p*pitch_error;
+    pwm2 = pwm2 - p*roll_error - p*pitch_error;
+    pwm3 = pwm3 + p*roll_error - p*pitch_error;
+    pwm4 = pwm4 - p*roll_error + p*pitch_error;
+    if (pwm1 > 500)
+    {
+      pwm1 = 500;
+    }
+    if (pwm1 < 0)
+    {
+      pwm1 = 0;
+    }
+    if (pwm2 > 500)
+    {
+      pwm2 = 500;
+    }
+    if (pwm2 < 0)
+    {
+      pwm2 = 0;
+    }
+    if (pwm3 > 500)
+    {
+      pwm3 = 500;
+    }
+    if (pwm3 < 0)
+    {
+      pwm3 = 0;
+    }
+    if (pwm4 > 500)
+    {
+      pwm4 = 500;
+    }
+    if (pwm4 < 0)
+    {
+      pwm4 = 0;
+    }
+    esc1.writeMicroseconds(climb + pwm1);
+    esc2.writeMicroseconds(climb + pwm2);
+    esc3.writeMicroseconds(climb + pwm3);
+    esc4.writeMicroseconds(climb + pwm4);
+    // needs to see which motor does what and IMU position
     //pwm = pwm -p*error;
     pid_flag = 0;
   }
@@ -130,20 +176,30 @@ void loop()
   roll = map(leftRight, 900, 1900, -22, 22);
   pitch = map(fowBack, 900, 1900, -22, 22);*/
 
-  Serial.print("yaw = ");
-  Serial.print(yaw);
+  Serial.print("esc1 = ");
+  Serial.print(climb + pwm1);
   Serial.print("  ");
   
-  Serial.print("climb = ");
-  Serial.print(climb);
+  Serial.print("esc2 = ");
+  Serial.print(climb + pwm2);
   Serial.print("  ");
 
-  Serial.print("roll = ");
-  Serial.print(roll);
+  Serial.print("esc3 = ");
+  Serial.print(climb + pwm3);
   Serial.print("  ");
 
-  Serial.print("pitch = ");
-  Serial.println(pitch);
+  Serial.print("esc4 = ");
+  Serial.print(climb + pwm4);
+  Serial.print("  ");
+
+  Serial.print("roll_error = ");
+  Serial.print(roll_error);
+  Serial.print("  ");
+
+  Serial.print("pitch_error = ");
+  Serial.println(pitch_error);
+
+
   
   /*esc1.write(elevation + leftRight - fowBack);
   esc2.write(elevation + leftRight + fowBack);
